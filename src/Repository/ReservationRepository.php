@@ -16,6 +16,17 @@ class ReservationRepository extends ServiceEntityRepository
         parent::__construct($registry, Reservation::class);
     }
 
+    public function findUpcomingReservations(): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->where('r.reservation_date > :today')
+            ->setParameter('today', new \DateTime('today'))
+            ->orderBy('r.reservation_date', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+
 //    /**
 //     * @return Reservation[] Returns an array of Reservation objects
 //     */

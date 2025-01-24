@@ -34,7 +34,15 @@ class Activity
     }
 
     // Getters and setters...
-
+    public function getSessions(): Collection
+    {
+        return $this->sessions;
+    }
+    
+    public function getSession(): ?Session
+    {
+        return $this->sessions->first() ?: null;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -71,11 +79,6 @@ class Activity
     {
         $this->level = $level;
         return $this;
-    }
-
-    public function getSessions(): Collection
-    {
-        return $this->sessions;
     }
 
     public function addSession(Session $session): static

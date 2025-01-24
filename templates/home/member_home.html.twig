@@ -2,23 +2,27 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-
-    <section class="user-home">
-        <h2>Bienvenue {{ app.user.name }}</h2>
+    <link href="{{ asset('styles/home.css') }}" rel="stylesheet">
+    <section class="user-home main-content">
+        {% if app.user %}
+            <h2>Bienvenue {{ app.user.name }}</h2>
+        {% else %}
+            <h2>Bienvenue, veuillez vous connecter pour accéder aux fonctionnalités.</h2>
+        {% endif %}
         <p>Voici les activités disponibles pour vous :</p>
         </br></br>
 
-        <section class="activities">
+        <section class="activities form-container">
             {% if activities is defined and activities|length > 0 %}
                 <h2>Activités disponibles</h2>
                 <table class="activities-table" id="activities-table">
                     <thead>
                         <tr>
-                            <th><button type="button" class="sort-button styled-header" data-sort="name">Nom</button></th>
-                            <th><button type="button" class="sort-button styled-header" data-sort="date">Date</button></th>
-                            <th><button type="button" class="sort-button styled-header" data-sort="difficulty">Niveau de Difficulté ⭐</button></th>
+                            <th><button type="button" class="sort-button styled-header btn" data-sort="name">Nom</button></th>
+                            <th><button type="button" class="sort-button styled-header btn" data-sort="date">Date</button></th>
+                            <th><button type="button" class="sort-button styled-header btn" data-sort="difficulty">Niveau de Difficulté ⭐</button></th>
                             <th>Horaires</th>
+                            <th>Sélectionner</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,10 +32,21 @@
                                 <td>{{ activity.session_date|date('d-m-Y') }}</td>
                                 <td>{{ activity.level_label }}</td>
                                 <td>{{ activity.session_time|date('H:i') }} - {{ activity.session_duration|date('H:i') }}</td>
+                                <td>
+                                    {% if app.user %}
+                                        {% if activity.is_registered %}
+                                            <button type="button" class="unregister-button btn" data-activity-name="{{ activity.activity_name }}" data-activity-time="{{ activity.session_time|date('H:i') }} - {{ activity.session_duration|date('H:i') }}" data-activity-date="{{ activity.session_date|date('d-m-Y') }}">Se désinscrire</button>
+                                        {% else %}
+                                            <button type="button" class="register-button btn" data-activity-name="{{ activity.activity_name }}" data-activity-time="{{ activity.session_time|date('H:i') }} - {{ activity.session_duration|date('H:i') }}" data-activity-date="{{ activity.session_date|date('d-m-Y') }}">S'inscrire</button>
+                                        {% endif %}
+                                    {% else %}
+                                        <button type="button" class="register-button btn" disabled>S'inscrire</button>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="4">Aucune activité disponible pour le moment.</td>
+                                <td colspan="5">Aucune activité disponible pour le moment.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -40,52 +55,65 @@
                 <p>Aucune activité disponible pour le moment.</p>
             {% endif %}
             </br></br>
-            <button type="button" class="BoutonInscrire" id="register-button">S'inscrire</button>
-            </br></br></br>
         </section>
     </section>
 
-    <div id="info-box" class="info-box">
-        <h3>Informations transmises :</h3>
-        <pre id="info-content">Aucune sélection pour le moment.</pre>
+    <!-- Popup pour afficher les informations transmises -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content form-container">
+            <span class="close-popup btn-back">&times;</span>
+            <h2>Informations transmises :</h2>
+            <pre id="info-content">Aucune sélection pour le moment.</pre>
+        </div>
     </div>
 
     <script>
-    document.getElementById('register-button').addEventListener('click', function () {
-        const activities = [];
+    document.querySelectorAll('.register-button, .unregister-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const activityName = this.getAttribute('data-activity-name');
+            const activityTime = this.getAttribute('data-activity-time');
+            const activityDate = this.getAttribute('data-activity-date');
+            const userName = '{{ app.user ? app.user.name : '' }}';
+            const url = this.classList.contains('register-button') ? '/reserve' : '/unreserve';
 
-        // Parcours de toutes les lignes du tableau pour récupérer les horaires sélectionnés
-        const rows = document.querySelectorAll('#activities-table tbody tr');
+            // Mise à jour de la boîte d'informations
+            const infoContent = document.getElementById('info-content');
+            infoContent.textContent = `${activityName}: ${activityTime} le ${activityDate}`;
 
-        rows.forEach(function(row) {
-            const activityName = row.cells[0].textContent.trim(); // Nom de l'activité
-            const timeCheckboxes = row.querySelectorAll(`input[name="${activityName}"]:checked`); // Horaires sélectionnés
-            const activityTimes = [];
+            // Afficher la popup
+            const popup = document.getElementById('popup');
+            popup.classList.add('active');
 
-            timeCheckboxes.forEach(function(timeCheckbox) {
-                activityTimes.push(timeCheckbox.value);
-            });
-
-            // Si des horaires sont sélectionnés pour cette activité
-            if (activityTimes.length > 0) {
-                activities.push({
+            // Envoyer les données via AJAX
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
                     name: activityName,
-                    times: activityTimes
-                });
-            }
-        });
-
-        // Mise à jour de la boîte d'informations
-        const infoContent = document.getElementById('info-content');
-        if (activities.length > 0) {
-            let infoText = '';
-            activities.forEach(function (activity) {
-                infoText += `${activity.name}: ${activity.times.join(', ')}\n`;
+                    date: activityTime,
+                    user_name: userName,
+                    reservation_date: activityDate
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                // Recharger la page pour mettre à jour les boutons
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
             });
-            infoContent.textContent = infoText;
-        } else {
-            infoContent.textContent = 'Aucune sélection pour le moment.';
-        }
+        });
+    });
+
+    // Fermer la popup
+    document.querySelector('.close-popup').addEventListener('click', function () {
+        const popup = document.getElementById('popup');
+        popup.classList.remove('active');
     });
 
     // Tri du tableau

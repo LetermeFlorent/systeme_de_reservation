@@ -8,6 +8,44 @@
 
 {% block body %}
     <section class="admin-activity-management">
+        <!-- Section pour afficher toutes les activités -->
+        <h1>Liste des Activités</h1>
+        <table class="activities-table" id="activities-table">
+            <thead>
+                <tr>
+                    <th><button type="button" class="sort-button styled-header btn" data-sort="name">ID</button></th>
+                    <th><button type="button" class="sort-button styled-header btn" data-sort="name">Nom</button></th>
+                    <th><button type="button" class="sort-button styled-header btn" data-sort="date">Date</button></th>
+                    <th><button type="button" class="sort-button styled-header btn" data-sort="difficulty">Niveau de Difficulté ⭐</button></th>
+                    <th>Horaires</th>
+                </tr>
+            </thead>
+            <tbody>
+{% for activity in activities %}
+    <tr>
+        <td>{{ activity.activity_id }}</td>
+        <td>{{ activity.activity_name }}</td>
+        <td>{{ activity.session_date|date('d-m-Y') }}</td>
+        <td>{{ activity.level_label }}</td>
+        <td>{{ activity.session_time|date('H:i') }} - {{ activity.session_duration|date('H:i') }}</td>
+        <td>
+            <!-- Bouton Supprimer -->
+            <form action="" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette session et son activité ?');">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ activity.session_id) }}">
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="5">Aucune activité disponible pour le moment.</td>
+    </tr>
+{% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Section pour la gestion des activités -->
         <h1>Gestion des Activités</h1>
         <a id="open-popup" href="{{ path('app_activity_new') }}" class="btn btn-primary">Ajouter une nouvelle activité</a>
 
@@ -18,7 +56,40 @@
                 <h2>Créer une nouvelle activité</h2>
 
                 {% if form is defined %}
-                    {% include 'activity/index.html.twig' with { 'form': form } %}
+                    {{ form_start(form) }}
+                        <div class="form-group">
+                            {{ form_label(form.label) }}
+                            {{ form_widget(form.label, { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description, { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.level) }}
+                            {{ form_widget(form.level, { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.date) }}
+                            {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.heure) }}
+                            {{ form_widget(form.heure, { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <div class="form-group">
+                            <label>Durée</label>
+                            <div class="row">
+                                <div class="col">
+                                    {{ form_widget(form.duration_hours, { 'attr': {'class': 'form-control', 'placeholder': 'Heures'} }) }}
+                                </div>
+                                <div class="col">
+                                    {{ form_widget(form.duration_minutes, { 'attr': {'class': 'form-control', 'placeholder': 'Minutes'} }) }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    {{ form_end(form) }}
                 {% else %}
                     <p>Le formulaire n'est pas disponible.</p>
                 {% endif %}

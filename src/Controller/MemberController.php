@@ -81,25 +81,6 @@ final class MemberController extends AbstractController
         return $this->redirectToRoute('app_member_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/home', name: 'app_member_home', methods: ['GET'])]
-    public function memberHome(EntityManagerInterface $entityManager): Response
-    {
-        // Requête SQL brute pour récupérer toutes les activités
-        $sql = 'SELECT * FROM activity';
-        $connection = $entityManager->getConnection();
-        $stmt = $connection->prepare($sql);
-        $resultSet = $stmt->executeQuery();
-    
-        // Récupérer les activités sous forme de tableau associatif
-        $activities = $resultSet->fetchAllAssociative();
-    
-        // Vérification pour debug
-        dump($activities);
-    
-        return $this->render('home/member_home.html.twig', [
-            'activities' => $activities,
-        ]);
-    }
     
 }
 

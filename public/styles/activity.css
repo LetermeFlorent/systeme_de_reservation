@@ -10,13 +10,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #0a192f; 
+    background: #0a192f;
     color: #fff;
     overflow-x: hidden;
 }
 
 .main-content {
-    margin-top: 80px; 
+    margin-top: 80px;
     padding: 2rem;
     max-width: 800px;
     width: 100%;
@@ -28,12 +28,12 @@ body {
 h1 {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: #3b82f6; 
+    color: #3b82f6;
 }
 
 /* Conteneur du formulaire */
 .form-container {
-    background-color: rgba(30, 41, 59, 0.9); 
+    background-color: rgba(30, 41, 59, 0.9);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.6);
@@ -81,12 +81,68 @@ button:hover {
 .btn-back {
     display: inline-block;
     margin-top: 1rem;
-    color: #94a3b8; 
+    color: #94a3b8;
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .btn-back:hover {
-    color: #3b82f6; 
+    color: #3b82f6;
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.popup.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-content {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    padding: 2rem;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 24px;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.popup-content h2 {
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.popup-content .close-popup {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    background: transparent;
+    color: #fff;
+    border: none;
+    cursor: pointer;
 }

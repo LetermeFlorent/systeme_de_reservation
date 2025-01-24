@@ -1,6 +1,12 @@
+
+# config/routes.yaml
+
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
 
+admin_home:
+    path: /admin
+    controller: App\Controller\HomeController::adminHome

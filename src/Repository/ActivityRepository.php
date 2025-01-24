@@ -24,9 +24,10 @@ class ActivityRepository extends ServiceEntityRepository
             ->join('a.sessions', 's')
             ->join('a.level', 'l')
             ->select(
-                'a.id AS id',
+                'a.id AS activity_id',
                 'a.label AS activity_name',
                 'l.label AS level_label',
+                's.id AS session_id', // Ajout de cette ligne
                 's.date AS session_date',
                 's.heure AS session_time',
                 's.duration AS session_duration'

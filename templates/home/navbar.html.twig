@@ -12,9 +12,7 @@
         <div class="navbar-right">
             {% if app.user %}
                 <span class="user-info">Bonjour, {{ app.user.name }}</span>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_settings') }}" class="navbar-btn navbar-btn-settings"></a>
-                {% endif %}
+                <a href="{{ path('app_settings') }}" class="navbar-btn navbar-btn-settings"></a>
                 <a href="{{ path('app_logout') }}" class="navbar-btn navbar-btn-logout">Déconnexion</a>
             {% else %}
                 <a href="{{ path('app_login') }}" class="navbar-btn navbar-btn-login">Se connecter</a>

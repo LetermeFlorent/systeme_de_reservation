@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241219071159 extends AbstractMigration
+final class Version20250117105249 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -23,6 +23,8 @@ final class Version20241219071159 extends AbstractMigration
         $this->addSql('ALTER TABLE activity ALTER level_id SET NOT NULL');
         $this->addSql('ALTER TABLE activity ADD CONSTRAINT FK_AC74095A5FB14BA7 FOREIGN KEY (level_id) REFERENCES level (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('CREATE INDEX IDX_AC74095A5FB14BA7 ON activity (level_id)');
+        $this->addSql('ALTER TABLE reservation ADD horaire_debut TIME(0) WITHOUT TIME ZONE ');
+        $this->addSql('ALTER TABLE reservation ADD horaire_fin TIME(0) WITHOUT TIME ZONE ');
         $this->addSql('ALTER TABLE session DROP CONSTRAINT fk_session_activity');
         $this->addSql('ALTER TABLE session ALTER activity_id SET NOT NULL');
         $this->addSql('ALTER TABLE session ADD CONSTRAINT FK_D044D5D481C06096 FOREIGN KEY (activity_id) REFERENCES activity (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -35,6 +37,8 @@ final class Version20241219071159 extends AbstractMigration
         $this->addSql('ALTER TABLE activity DROP CONSTRAINT FK_AC74095A5FB14BA7');
         $this->addSql('DROP INDEX IDX_AC74095A5FB14BA7');
         $this->addSql('ALTER TABLE activity ALTER level_id DROP NOT NULL');
+        $this->addSql('ALTER TABLE reservation DROP horaire_debut');
+        $this->addSql('ALTER TABLE reservation DROP horaire_fin');
         $this->addSql('ALTER TABLE session DROP CONSTRAINT FK_D044D5D481C06096');
         $this->addSql('ALTER TABLE session ALTER activity_id DROP NOT NULL');
         $this->addSql('ALTER TABLE session ADD CONSTRAINT fk_session_activity FOREIGN KEY (activity_id) REFERENCES activity (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');

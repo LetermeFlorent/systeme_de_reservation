@@ -28,14 +28,30 @@ final class SessionController extends AbstractController
         $session = new Session();
         $form = $this->createForm(SessionType::class, $session);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupère les données du formulaire
+            $date = $form->get('date')->getData();
+            $heure = $form->get('heure')->getData();
+            $durationHours = $form->get('duration_hours')->getData();
+            $durationMinutes = $form->get('duration_minutes')->getData();
+    
+            // Crée un objet DateTime pour la durée
+            $duration = new \DateTime();
+            $duration->setTime($durationHours, $durationMinutes);
+    
+            // Assigne les valeurs à la session
+            $session->setDate($date);
+            $session->setHeure($heure);
+            $session->setDuration($duration);
+    
+            // Enregistre la session en base de données
             $entityManager->persist($session);
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_session_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('session/new.html.twig', [
             'session' => $session,
             'form' => $form,
@@ -78,4 +94,6 @@ final class SessionController extends AbstractController
 
         return $this->redirectToRoute('app_session_index', [], Response::HTTP_SEE_OTHER);
     }
+
+  
 }

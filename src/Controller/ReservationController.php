@@ -78,4 +78,18 @@ final class ReservationController extends AbstractController
 
         return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    public function historiqueReservation(ReservationRepository $reservationRepository): Response
+    {
+        // Fetch upcoming reservations
+        $upcomingReservations = $reservationRepository->findUpcomingReservations();
+
+        // Fetch past reservations
+        $pastReservations = $reservationRepository->findPastReservations();
+
+        return $this->render('settings/index.html.twig', [
+            'upcoming_reservations' => $upcomingReservations,
+            'past_reservations' => $pastReservations,
+        ]);
+    }
 }

@@ -26,6 +26,12 @@ class Reservation
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $reservation_date = null;
 
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $horaire_debut;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $horaire_fin;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,6 +88,30 @@ class Reservation
     public function setReservationDate(\DateTimeInterface $reservation_date): static
     {
         $this->reservation_date = $reservation_date;
+
+        return $this;
+    }
+
+    public function getHoraireDebut(): ?\DateTimeInterface
+    {
+        return $this->horaire_debut;
+    }
+
+    public function setHoraireDebut(\DateTimeInterface $horaire_debut): static
+    {
+        $this->horaire_debut = $horaire_debut;
+
+        return $this;
+    }
+
+    public function getHoraireFin(): ?\DateTimeInterface
+    {
+        return $this->horaire_fin;
+    }
+
+    public function setHoraireFin(\DateTimeInterface $horaire_fin): static
+    {
+        $this->horaire_fin = $horaire_fin;
 
         return $this;
     }
