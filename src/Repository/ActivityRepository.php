@@ -6,15 +6,19 @@ namespace App\Repository;
 use App\Entity\Activity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<Activity>
  */
 class ActivityRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $entityManager;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Activity::class);
+        $this->entityManager = $entityManager;
     }
 
     /* Récupère toutes les activités avec leurs sessions et niveaux, sans les dates.*/
@@ -27,7 +31,7 @@ class ActivityRepository extends ServiceEntityRepository
                 'a.id AS activity_id',
                 'a.label AS activity_name',
                 'l.label AS level_label',
-                's.id AS session_id', // Ajout de cette ligne
+                's.id AS session_id',
                 's.date AS session_date',
                 's.heure AS session_time',
                 's.duration AS session_duration'
@@ -39,19 +43,17 @@ class ActivityRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function deleteActivityWithSessions(int $activityId): void
+    {
+        $activity = $this->find($activityId);
+
+        if ($activity) {
+            foreach ($activity->getSessions() as $session) {
+                $this->entityManager->remove($session);
+            }
+            $this->entityManager->remove($activity);
+            $this->entityManager->flush();
+        }
+    }
 }
-// SELECT
-//     a.id AS id,
-//     a.label AS activity_name,
-//     l.label AS level_label,
-//     s.date AS session_date,
-//     s.heure AS session_time,
-//     s.duration AS session_duration
-// FROM
-//     activity a
-// JOIN
-//     session s ON a.id = s.activity_id
-// JOIN
-//     level l ON a.level_id = l.id
-// ORDER BY
-//     s.date ASC, a.label ASC;

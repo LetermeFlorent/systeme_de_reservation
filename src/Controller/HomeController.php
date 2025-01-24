@@ -38,7 +38,6 @@ class HomeController extends AbstractController
             return [
                 'activity_id' => $activity['activity_id'],
                 'activity_name' => $activity['activity_name'],
-                'session_id' => $activity['session_id'], // Ajout de cette ligne
                 'session_date' => $activity['session_date'],
                 'level_label' => $activity['level_label'],
                 'session_time' => $activity['session_time'],
@@ -121,6 +120,13 @@ class HomeController extends AbstractController
             'activities' => $activities,
             'levels' => $levels, // Passer les niveaux au template
         ]);
+    }
+
+    #[Route('/admin/activity/delete/{id}', name: 'app_delete_activity', methods: ['POST'])]
+    public function deleteActivity(int $id, ActivityRepository $activityRepository, Request $request): Response
+    {
+        $activityRepository->deleteActivityWithSessions($id);
+        return $this->redirect($request->headers->get('referer'));
     }
 
 }

@@ -30,9 +30,9 @@
         <td>{{ activity.session_time|date('H:i') }} - {{ activity.session_duration|date('H:i') }}</td>
         <td>
             <!-- Bouton Supprimer -->
-            <form action="" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette session et son activité ?');">
+            <form action="{{ path('app_delete_activity', {'id': activity.activity_id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette session et son activité ?');">
                 <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ activity.session_id) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ activity.activity_id) }}">
                 <button type="submit" class="btn btn-danger">Supprimer</button>
             </form>
         </td>

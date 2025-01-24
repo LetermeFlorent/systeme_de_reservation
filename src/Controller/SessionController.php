@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Session;
 use App\Form\SessionType;
 use App\Repository\SessionRepository;
+use App\Repository\ActivityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,16 +85,4 @@ final class SessionController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_session_delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$session->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($session);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_session_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-  
 }
